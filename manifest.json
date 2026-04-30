@@ -1,0 +1,18 @@
+{
+  "name":"VAULT — AI Money Agent",
+  "short_name":"VAULT",
+  "description":"AI money agent with voice, barcode auth, auto self-learning.",
+  "start_url":"./index.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#07070f",
+  "theme_color":"#c9a84c",
+  "orientation":"portrait-primary",
+  "categories":["finance","shopping","utilities","productivity"],
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}],
+  "shortcuts":[
+    {"name":"Voice Chat","url":"./index.html?tab=chat","icons":[{"src":"icon.svg","sizes":"any"}]},
+    {"name":"Scan Product","url":"./index.html?tab=scan","icons":[{"src":"icon.svg","sizes":"any"}]},
+    {"name":"Install Guide","url":"./index.html?tab=install","icons":[{"src":"icon.svg","sizes":"any"}]}
+  ]
+}

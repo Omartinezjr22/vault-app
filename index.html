@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#c9a84c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VAULT">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon.svg">
+<title>VAULT · AI Money Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070f;--sf:#0d0d1c;--cd:#131320;--cd2:#191928;
+  --br:#1f1f36;--br2:#2a2a46;
+  --gd:#c9a84c;--gd2:#e8c97a;--gd3:rgba(201,168,76,.14);--gd4:rgba(201,168,76,.07);
+  --gn:#3ddc84;--gn2:rgba(61,220,132,.14);--gn3:rgba(61,220,132,.07);
+  --rd:#ff5555;--rd2:rgba(255,85,85,.14);--rd3:rgba(255,85,85,.07);
+  --bl:#7b9cff;--bl2:rgba(123,156,255,.16);--bl3:rgba(123,156,255,.07);
+  --pp:#b48eff;--pp2:rgba(180,142,255,.14);
+  --og:#ff9f55;--og2:rgba(255,159,85,.14);
+  --tx:#ece8f8;--tx2:#9d99b8;--tx3:#52506e;
+  --safe-t:env(safe-area-inset-top);--safe-b:env(safe-area-inset-bottom);
+  --r:14px;--rs:9px;--F:'Space Grotesk',sans-serif;--M:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--tx);font-family:var(--F);display:flex;flex-direction:column;padding-top:var(--safe-t);padding-bottom:var(--safe-b)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 65% 45% at 85% 8%,rgba(201,168,76,.055) 0%,transparent 60%),
+             radial-gradient(ellipse 45% 35% at 8% 85%,rgba(61,220,132,.038) 0%,transparent 55%),
+             radial-gradient(ellipse 50% 40% at 50% 50%,rgba(123,156,255,.025) 0%,transparent 60%)}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(201,168,76,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.016) 1px,transparent 1px);
+  background-size:48px 48px}
+
+/* AUTO-LEARN TOAST */
+#alToast{
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  display:flex;align-items:center;gap:10px;padding:11px 15px;
+  background:linear-gradient(135deg,rgba(61,220,132,.18),rgba(123,156,255,.12));
+  border-bottom:1px solid rgba(61,220,132,.25);
+  backdrop-filter:blur(20px);
+  transform:translateY(-100%);transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+#alToast.show{transform:translateY(0)}
+.alt-ic{font-size:20px;flex-shrink:0;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alt-done{animation:none!important}
+.alt-body{flex:1}.alt-title{font-size:12px;font-weight:700;color:var(--gn)}
+.alt-sub{font:300 9px var(--M);color:var(--tx3);margin-top:2px}
+.alt-close{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:17px;padding:3px;flex-shrink:0}
+
+/* INSTALL BANNER */
+#iBanner{display:none;align-items:center;gap:10px;background:linear-gradient(90deg,rgba(201,168,76,.14),rgba(61,220,132,.08));border-bottom:1px solid rgba(201,168,76,.2);padding:9px 14px;z-index:300;position:relative;flex-shrink:0}
+.ibt{flex:1}.ibtt{font-size:12px;font-weight:700;color:var(--gd)}.ibts{font:300 9px var(--M);color:var(--tx3)}
+.ibb{background:var(--gd);color:#000;border:none;border-radius:7px;padding:5px 12px;font:700 11px var(--F);cursor:pointer}
+.ibc{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:17px;padding:4px}
+
+/* HEADER */
+header{display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid var(--br);background:rgba(7,7,15,.93);backdrop-filter:blur(24px);position:relative;z-index:100;flex-shrink:0}
+.logo-m{width:34px;height:34px;background:var(--gd);border-radius:9px;display:flex;align-items:center;justify-content:center;font:900 17px var(--F);color:#000;flex-shrink:0}
+.logo-n{font-size:16px;font-weight:700;letter-spacing:3px;color:var(--gd);line-height:1}
+.logo-t{font:300 8px var(--M);color:var(--tx3);letter-spacing:2px;margin-top:2px}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:6px}
+.pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 8px;font:400 9px var(--M);letter-spacing:.5px}
+.pill-gn{background:var(--gn3);border:1px solid rgba(61,220,132,.16);color:var(--gn)}
+.pill-gd{background:var(--gd4);border:1px solid rgba(201,168,76,.16);color:var(--gd)}
+.pill-pp{background:var(--pp2);border:1px solid rgba(180,142,255,.2);color:var(--pp)}
+.dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+/* BODY / PANELS / TABS */
+.app-body{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative;z-index:1}
+.panel{display:none;flex:1;flex-direction:column;overflow:hidden;height:100%}
+.panel.on{display:flex}
+.scrl{flex:1;overflow-y:auto;padding:14px}
+.scrl::-webkit-scrollbar{width:3px}
+.scrl::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px}
+.tabs{display:flex;border-top:1px solid var(--br);background:rgba(7,7,15,.96);backdrop-filter:blur(24px);flex-shrink:0;z-index:100;position:relative}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 3px 7px;cursor:pointer;transition:all .2s;position:relative;border:none;background:none;color:var(--tx3);font:600 8px var(--F);gap:3px;letter-spacing:.3px}
+.tab.on{color:var(--gd)}
+.tab.on::before{content:'';position:absolute;top:0;left:18%;right:18%;height:2px;background:var(--gd);border-radius:0 0 2px 2px}
+.tab-ic{font-size:17px;line-height:1}
+.tbadge{position:absolute;top:4px;right:calc(50% - 20px);background:var(--gn);color:#000;font:700 7px var(--M);padding:1px 4px;border-radius:6px}
+
+/* MIC FAB */
+.mic-fab{position:absolute;top:-26px;left:50%;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gd),var(--gd2));border:3px solid var(--bg);box-shadow:0 4px 22px rgba(201,168,76,.48);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;z-index:10;font-size:21px;user-select:none}
+.mic-fab:active{transform:translateX(-50%) scale(.9)}
+.mic-fab.lst{background:linear-gradient(135deg,var(--rd),#ff8888);box-shadow:0 4px 26px rgba(255,85,85,.55);animation:mPulse .75s ease infinite}
+.mic-fab.spk{background:linear-gradient(135deg,var(--gn),#7fffbb);box-shadow:0 4px 26px rgba(61,220,132,.55)}
+@keyframes mPulse{0%,100%{box-shadow:0 4px 26px rgba(255,85,85,.45),0 0 0 0 rgba(255,85,85,.25)}50%{box-shadow:0 4px 34px rgba(255,85,85,.75),0 0 0 12px rgba(255,85,85,0)}}
+
+/* VOICE OVERLAY */
+#vOv{display:none;position:fixed;inset:0;z-index:500;background:rgba(7,7,15,.97);backdrop-filter:blur(20px);flex-direction:column;align-items:center;justify-content:center;gap:18px;animation:fIn .25s ease}
+#vOv.show{display:flex}
+@keyframes fIn{from{opacity:0}to{opacity:1}}
+.vo-rings{position:relative;width:130px;height:130px;display:flex;align-items:center;justify-content:center}
+.vor{position:absolute;border-radius:50%;border:2px solid rgba(201,168,76,.22);animation:rE 1.8s ease-out infinite}
+.vor:nth-child(2){width:75%;height:75%;border-color:rgba(201,168,76,.38);animation-delay:.3s}
+.vor:nth-child(3){width:52%;height:52%;border-color:rgba(201,168,76,.6);animation-delay:.6s}
+.vor{width:100%;height:100%}
+@keyframes rE{0%{transform:scale(.88);opacity:1}100%{transform:scale(1.12);opacity:0}}
+.vo-rings.lst .vor{border-color:rgba(255,85,85,.45)!important}.vo-rings.lst .vor:nth-child(2){border-color:rgba(255,85,85,.65)!important}.vo-rings.lst .vor:nth-child(3){border-color:rgba(255,85,85,.85)!important}
+.vo-rings.spk .vor{border-color:rgba(61,220,132,.38)!important}.vo-rings.spk .vor:nth-child(2){border-color:rgba(61,220,132,.58)!important}.vo-rings.spk .vor:nth-child(3){border-color:rgba(61,220,132,.78)!important}
+.vo-core{width:68px;height:68px;border-radius:50%;background:var(--gd4);border:2px solid rgba(201,168,76,.35);display:flex;align-items:center;justify-content:center;font-size:28px;position:relative;z-index:1;transition:all .3s}
+.vo-rings.lst .vo-core{background:var(--rd3);border-color:rgba(255,85,85,.45);animation:cP .55s ease infinite alternate}
+.vo-rings.spk .vo-core{background:var(--gn3);border-color:rgba(61,220,132,.45);animation:cP2 .75s ease infinite alternate}
+@keyframes cP{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes cP2{from{transform:scale(.95)}to{transform:scale(1.05)}}
+.waveform{display:flex;align-items:center;gap:3px;height:36px}
+.wb{width:4px;background:var(--gd);border-radius:4px;height:4px;transition:height .08s ease}
+.waveform.lst .wb{background:var(--rd);animation:wA .55s ease infinite}.waveform.spk .wb{background:var(--gn);animation:wA .45s ease infinite}
+.wb:nth-child(1){animation-delay:0s!important}.wb:nth-child(2){animation-delay:.08s!important}.wb:nth-child(3){animation-delay:.16s!important}.wb:nth-child(4){animation-delay:.08s!important}.wb:nth-child(5){animation-delay:0s!important}.wb:nth-child(6){animation-delay:.12s!important}.wb:nth-child(7){animation-delay:.04s!important}.wb:nth-child(8){animation-delay:.2s!important}
+@keyframes wA{0%,100%{height:4px}50%{height:30px}}
+.vo-st{font:700 13px var(--F);letter-spacing:1.5px}
+.vo-st.lst{color:var(--rd)}.vo-st.spk{color:var(--gn)}.vo-st.idle{color:var(--gd)}
+.vo-tr{font:300 12px/1.55 var(--M);color:var(--tx2);text-align:center;max-width:270px;min-height:42px;padding:9px 14px;background:var(--cd);border:1px solid var(--br);border-radius:10px;letter-spacing:.2px}
+.vo-btns{display:flex;gap:10px}
+.vo-btn{padding:9px 18px;border-radius:28px;border:none;font:700 11px var(--F);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.vo-btn:active{transform:scale(.93)}
+.vob-rd{background:var(--rd2);color:var(--rd);border:1px solid rgba(255,85,85,.28)}
+.vob-gd{background:var(--gd3);color:var(--gd);border:1px solid rgba(201,168,76,.28)}
+.vob-gh{background:var(--cd);color:var(--tx2);border:1px solid var(--br)}
+
+/* VOICE MODE BAR */
+.vmbar{display:flex;align-items:center;gap:7px;padding:7px 13px;background:var(--bl3);border-bottom:1px solid rgba(123,156,255,.1);font:400 9px var(--M);color:var(--bl);letter-spacing:.5px;flex-shrink:0}
+.vmbar-d{width:5px;height:5px;border-radius:50%;background:var(--bl);animation:p 1.4s infinite}
+.vmbar-x{margin-left:auto;background:none;border:none;color:var(--tx3);cursor:pointer;font-size:14px}
+
+/* COMMON */
+.flabel{font:400 8px var(--M);letter-spacing:2px;color:var(--tx3);display:block;margin-bottom:5px}
+.finput{width:100%;background:var(--sf);border:1px solid var(--br);border-radius:var(--rs);padding:9px 12px;color:var(--tx);font:400 12px var(--M);outline:none;transition:border-color .2s;margin-bottom:10px}
+.finput:focus{border-color:rgba(201,168,76,.42);box-shadow:0 0 0 3px rgba(201,168,76,.07)}
+.finput::placeholder{color:var(--tx3)}.finput:last-child{margin-bottom:0}
+select.finput{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2352506e'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+select.finput option{background:var(--cd)}
+.btn{padding:9px 16px;border-radius:var(--rs);border:none;font:700 12px var(--F);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:active{transform:scale(.94)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-gd{background:var(--gd);color:#000}.btn-gd:hover{background:var(--gd2)}
+.btn-gn{background:var(--gn);color:#000}.btn-gh{background:var(--cd2);color:var(--tx);border:1px solid var(--br2)}
+.btn-rd{background:var(--rd3);color:var(--rd);border:1px solid rgba(255,85,85,.2)}
+.btn-bl{background:var(--bl2);color:var(--bl);border:1px solid rgba(123,156,255,.2)}
+.card{background:var(--cd);border:1px solid var(--br);border-radius:var(--r);overflow:hidden}
+.row-btns{display:flex;gap:7px;padding:9px 13px;border-top:1px solid var(--br);flex-wrap:wrap}
+.tag{font:600 8px var(--M);padding:2px 7px;border-radius:9px;display:inline-block;letter-spacing:.3px}
+.tag-gn{background:var(--gn2);color:var(--gn)}.tag-rd{background:var(--rd2);color:var(--rd)}
+.tag-gd{background:var(--gd3);color:var(--gd)}.tag-bl{background:var(--bl2);color:var(--bl)}
+.tag-pp{background:var(--pp2);color:var(--pp)}.tag-og{background:var(--og2);color:var(--og)}
+
+/* WELCOME */
+.welcome{text-align:center;padding:16px 8px 14px;animation:fuA .5s ease}
+@keyframes fuA{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.wring{width:60px;height:60px;border-radius:50%;border:2px solid var(--gd);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;background:var(--gd4);animation:glow 3s ease infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 16px rgba(201,168,76,.13)}50%{box-shadow:0 0 38px rgba(201,168,76,.32)}}
+.welcome h1{font-size:19px;font-weight:700;margin-bottom:5px}.welcome h1 b{color:var(--gd)}
+.welcome p{font:300 10px/1.8 var(--M);color:var(--tx3);letter-spacing:.3px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.qcard{background:var(--cd);border:1px solid var(--br);border-radius:var(--r);padding:10px;cursor:pointer;transition:all .2s;text-align:left}
+.qcard:active{border-color:var(--gd);background:var(--gd4);transform:scale(.97)}
+.qc-ic{font-size:16px;margin-bottom:4px;display:block}.qc-t{font-size:11px;font-weight:600;margin-bottom:2px}
+.qc-d{font:300 9px/1.4 var(--M);color:var(--tx3)}
+
+/* CHAT */
+.cmsg{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+.cmsg::-webkit-scrollbar{width:3px}.cmsg::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px}
+.msg{display:flex;gap:8px;animation:fuA .22s ease;max-width:100%}
+.msg.me{align-self:flex-end;flex-direction:row-reverse;max-width:87%}
+.av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+.av.ai{background:var(--gd4);border:1px solid rgba(201,168,76,.2)}
+.av.me{background:var(--cd2);border:1px solid var(--br2)}
+.bub{padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.65;max-width:100%;word-break:break-word}
+.msg.ai .bub{background:var(--cd);border:1px solid var(--br);border-top-left-radius:3px}
+.msg.me .bub{background:var(--gd4);border:1px solid rgba(201,168,76,.16);border-top-right-radius:3px;color:var(--gd2)}
+.bub strong{color:var(--gd)}
+.vbadge{display:inline-flex;align-items:center;gap:4px;font:400 8px var(--M);color:var(--bl);background:var(--bl3);border-radius:9px;padding:2px 6px;margin-bottom:3px;letter-spacing:.3px}
+.typing{display:flex;gap:4px;align-items:center;padding:9px 12px;background:var(--cd);border:1px solid var(--br);border-radius:12px;border-top-left-radius:3px;width:fit-content}
+.typing span{width:5px;height:5px;background:var(--gd);border-radius:50%;animation:tp 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes tp{0%,100%{opacity:.3;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+.sp-ind{display:none;align-items:center;gap:4px;margin-top:5px;font:300 9px var(--M);color:var(--gn)}
+.sp-ind.show{display:flex}
+.sp-bars{display:flex;align-items:center;gap:2px}
+.sp-bar{width:3px;background:var(--gn);border-radius:2px;animation:wA .5s ease infinite}
+.sp-bar:nth-child(2){animation-delay:.1s}.sp-bar:nth-child(3){animation-delay:.2s}.sp-bar:nth-child(4){animation-delay:.1s}
+
+/* CHAT FOOT */
+.cfoot{padding:9px 12px 11px;border-top:1px solid var(--br);background:rgba(7,7,15,.9);flex-shrink:0}
+.inpwrap{display:flex;gap:7px;align-items:flex-end;background:var(--cd);border:1px solid var(--br);border-radius:var(--r);padding:7px 10px;transition:border-color .2s}
+.inpwrap:focus-within{border-color:rgba(201,168,76,.4);box-shadow:0 0 0 3px rgba(201,168,76,.06)}
+textarea{flex:1;background:transparent;border:none;outline:none;color:var(--tx);font:400 13px var(--M);resize:none;line-height:1.5;max-height:88px;min-height:20px}
+textarea::placeholder{color:var(--tx3)}
+.snd-btn{width:32px;height:32px;background:var(--gd);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#000;font-size:14px;transition:all .15s}
+.snd-btn:active{transform:scale(.9)}.snd-btn:disabled{opacity:.4}
+.hints{display:flex;gap:5px;margin-top:6px;overflow-x:auto;padding-bottom:2px}
+.hints::-webkit-scrollbar{display:none}
+.hc{font:400 9px var(--M);color:var(--tx3);background:var(--sf);border:1px solid var(--br);border-radius:20px;padding:3px 9px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.hc:active{color:var(--gd);border-color:var(--gd)}
+
+/* SCAN */
+.cat-row{display:flex;gap:5px;overflow-x:auto;padding-bottom:4px;margin-bottom:11px}
+.cat-row::-webkit-scrollbar{display:none}
+.cat{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--cd);border:1px solid var(--br);border-radius:9px;padding:7px 9px;cursor:pointer;flex-shrink:0;transition:all .2s;min-width:50px}
+.cat.sel{background:var(--gn3);border-color:rgba(61,220,132,.3)}.cat:active{transform:scale(.92)}
+.cat-em{font-size:15px}.cat-lb{font:400 8px var(--M);color:var(--tx3)}.cat.sel .cat-lb{color:var(--gn)}
+.mtabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:11px}
+.mt{background:var(--cd);border:1px solid var(--br);border-radius:var(--rs);padding:8px 5px;cursor:pointer;text-align:center;transition:all .2s}
+.mt.sel{background:var(--gn3);border-color:rgba(61,220,132,.3)}.mt:active{transform:scale(.94)}
+.mt-ic{font-size:17px;display:block;margin-bottom:3px}.mt-lb{font-size:10px;font-weight:600}.mt-sub{font:300 8px var(--M);color:var(--tx3);margin-top:2px}
+#vw{position:relative;background:#000;border-radius:var(--r) var(--r) 0 0;overflow:hidden;display:none}
+#cam{width:100%;height:200px;object-fit:cover;display:block}
+.sov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.sfr{width:195px;height:78px;border:2px solid var(--gn);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.55);position:relative}
+.sln{position:absolute;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--gn),transparent);animation:sl 1.5s ease-in-out infinite}
+@keyframes sl{0%,100%{top:0}50%{top:calc(100% - 2px)}}
+.sc{position:absolute;width:12px;height:12px}
+.sc.tl{top:-2px;left:-2px;border-top:3px solid var(--gn);border-left:3px solid var(--gn)}
+.sc.tr{top:-2px;right:-2px;border-top:3px solid var(--gn);border-right:3px solid var(--gn)}
+.sc.bl{bottom:-2px;left:-2px;border-bottom:3px solid var(--gn);border-left:3px solid var(--gn)}
+.sc.br{bottom:-2px;right:-2px;border-bottom:3px solid var(--gn);border-right:3px solid var(--gn)}
+.chint{position:absolute;bottom:8px;left:0;right:0;text-align:center;font:300 9px var(--M);color:rgba(255,255,255,.5)}
+.upz{border:2px dashed var(--br2);border-radius:10px;padding:20px 13px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upz:active{border-color:var(--gd);background:var(--gd4)}
+.upz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.up-i{font-size:23px;margin-bottom:6px;display:block}.up-t{font-size:12px;font-weight:600;color:var(--tx2)}.up-s{font:300 9px var(--M);color:var(--tx3);margin-top:3px}
+#pp{width:100%;max-height:155px;object-fit:cover;border-radius:8px;margin-top:9px;display:none}
+#ab{display:none;padding:22px 13px;text-align:center;background:var(--cd);border:1px solid var(--br);border-radius:var(--r);margin-bottom:11px}
+.sp{font-size:26px;display:block;margin:0 auto 9px;animation:spin 2s linear infinite}
+.slist{margin-top:11px;display:flex;flex-direction:column;gap:4px}
+.si{display:flex;align-items:center;gap:6px;font:300 9px var(--M);color:var(--tx3);padding:4px 8px;background:var(--sf);border-radius:5px;border:1px solid transparent;transition:all .3s}
+.si.dn{color:var(--gn)}.si.ac{color:var(--gd);border-color:rgba(201,168,76,.16);background:var(--gd4)}
+.si-d{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+#rb{display:none;border-radius:var(--r);overflow:hidden;margin-bottom:11px;animation:fuA .4s ease;border:1px solid var(--br);background:var(--sf)}
+.rh{padding:11px 14px;border-bottom:1px solid var(--br);display:flex;align-items:flex-start;gap:9px}
+.rv{font-size:13px;font-weight:700}.vr{color:var(--gn)}.vf{color:var(--rd)}.vu{color:var(--gd)}
+.rn{font:300 9px var(--M);color:var(--tx3);margin-top:3px}.rl{font:300 8px var(--M);color:var(--bl);margin-top:2px}
+.rsc{margin-left:auto;text-align:right;flex-shrink:0}
+.scn{font-weight:700;font-size:19px;color:var(--tx)}.scl{font:400 7px var(--M);color:var(--tx3);margin-bottom:2px}
+.cbar{height:5px;background:var(--br);border-radius:3px;width:70px;overflow:hidden;margin-top:3px}
+.cf{height:100%;border-radius:3px;transition:width 1.2s ease}
+.cfg{background:var(--gn)}.cfr{background:var(--rd)}.cfu{background:var(--gd)}
+.rp{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px 14px;border-bottom:1px solid var(--br)}
+.pb{border-radius:7px;padding:8px 10px}
+.pbg{background:var(--gd4);border:1px solid rgba(201,168,76,.16)}.pbgn{background:var(--gn3);border:1px solid rgba(61,220,132,.16)}
+.pbl{font:400 7px var(--M);letter-spacing:1px;margin-bottom:2px}.pbv{font-size:15px;font-weight:700}.pbs{font:300 7px var(--M);color:var(--tx3);margin-top:2px}
+.rck{padding:9px 14px;border-bottom:1px solid var(--br);display:flex;flex-direction:column;gap:5px}
+.ckl{font:400 7px var(--M);letter-spacing:2px;color:var(--tx3);margin-bottom:3px}
+.chk{display:flex;align-items:flex-start;gap:6px;font-size:11px;line-height:1.5}
+.cd_{width:13px;height:13px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;margin-top:1px}
+.dok{background:var(--gn2);color:var(--gn)}.dwn{background:var(--gd3);color:var(--gd)}.dbd{background:var(--rd2);color:var(--rd)}
+.rsm{padding:9px 14px;border-bottom:1px solid var(--br);font:300 10px/1.65 var(--M);color:var(--tx2)}
+.rrec{margin:9px 14px 11px;border-radius:7px;padding:8px 12px;font-weight:700;font-size:11px}
+.rb{background:var(--gn3);color:var(--gn);border:1px solid rgba(61,220,132,.22)}
+.rp_{background:var(--rd3);color:var(--rd);border:1px solid rgba(255,85,85,.22)}
+.rv_{background:var(--gd4);color:var(--gd);border:1px solid rgba(201,168,76,.18)}
+.hsec{margin-top:13px}.hlb{font:400 8px var(--M);letter-spacing:2px;color:var(--tx3);margin-bottom:7px}
+.hi{background:var(--cd);border:1px solid var(--br);border-radius:7px;padding:8px 11px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.hi-e{font-size:15px;flex-shrink:0}.hi-i{flex:1;min-width:0}
+.hi-n{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi-c{font:300 8px var(--M);color:var(--tx3)}
+
+/* SKILLS */
+.sk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sk-top h2{font-size:16px;font-weight:700}
+.lring{width:46px;height:46px;border-radius:50%;border:2px solid var(--gd);display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--gd4);flex-shrink:0}
+.ln{font-size:13px;font-weight:700;color:var(--gd);line-height:1}.ll{font:400 7px var(--M);color:var(--tx3);letter-spacing:.5px}
+.xpw{margin-bottom:13px}.xpt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.xpl{font:400 8px var(--M);color:var(--tx3);letter-spacing:1px}.xpv{font:600 9px var(--M);color:var(--gd)}
+.xpb{height:5px;background:var(--br);border-radius:3px;overflow:hidden}.xpf{height:100%;background:linear-gradient(90deg,var(--gd),var(--gd2));transition:width 1s ease}
+/* AUTO-LEARN STATUS CARD */
+.al-status{background:linear-gradient(135deg,rgba(61,220,132,.1),rgba(123,156,255,.07));border:1px solid rgba(61,220,132,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:13px;display:flex;align-items:center;gap:11px}
+.al-st-ic{font-size:22px;flex-shrink:0}
+.al-st-inf{flex:1}
+.al-st-t{font-size:12px;font-weight:700;color:var(--gn);margin-bottom:2px}
+.al-st-s{font:300 9px var(--M);color:var(--tx3);line-height:1.5}
+.al-st-badge{background:var(--gn3);border:1px solid rgba(61,220,132,.2);border-radius:20px;padding:3px 9px;font:700 9px var(--M);color:var(--gn);flex-shrink:0}
+.learn-card{background:var(--cd);border:1px solid rgba(123,156,255,.2);border-radius:var(--r);overflow:hidden;margin-bottom:13px}
+.lh{padding:10px 13px;background:var(--bl3);border-bottom:1px solid rgba(123,156,255,.12);display:flex;align-items:center;gap:8px}
+.lh-i{font-size:19px}.lh-t{font-size:12px;font-weight:700;color:var(--bl)}.lh-s{font:300 9px var(--M);color:var(--tx3);margin-top:2px}
+.lform{padding:10px 13px}
+.lrow{display:flex;gap:7px}
+.linp{flex:1;background:var(--sf);border:1px solid var(--br);border-radius:var(--rs);padding:8px 11px;color:var(--tx);font:400 11px var(--M);outline:none;transition:border-color .2s}
+.linp:focus{border-color:rgba(123,156,255,.42)}.linp::placeholder{color:var(--tx3)}
+.sugs{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.sug{font:400 8px var(--M);color:var(--bl);background:var(--bl3);border:1px solid rgba(123,156,255,.15);border-radius:20px;padding:3px 8px;cursor:pointer;transition:all .15s}
+.sug:active{background:var(--bl2)}
+#lp{display:none;padding:11px 13px;background:var(--bl3);border-top:1px solid rgba(123,156,255,.12)}
+.lps{display:flex;flex-direction:column;gap:3px;margin-top:8px}
+.lps-i{display:flex;align-items:center;gap:7px;font:300 9px var(--M);color:var(--tx3);padding:4px 8px;background:rgba(123,156,255,.05);border-radius:5px;border:1px solid transparent;transition:all .3s}
+.lps-i.dn{color:var(--gn)}.lps-i.ac{color:var(--bl);border-color:rgba(123,156,255,.16)}
+.sgrid{display:flex;flex-direction:column;gap:7px;margin-bottom:13px}
+.sk{background:var(--cd);border:1px solid var(--br);border-radius:var(--r);padding:11px 13px;position:relative;overflow:hidden}
+.sk::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--sk-c,var(--gd));border-radius:2px 0 0 2px}
+.sk-h{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.sk-ic{font-size:19px;flex-shrink:0;line-height:1}.sk-ti{flex:1;min-width:0}
+.sk-nm{font-size:12px;font-weight:700;margin-bottom:2px}.sk-m{display:flex;gap:4px;flex-wrap:wrap}
+.sk-bd{font:300 10px/1.55 var(--M);color:var(--tx2);white-space:pre-wrap;word-break:break-word}
+.sk-ft{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:7px;border-top:1px solid var(--br)}
+.sk-dt{font:300 8px var(--M);color:var(--tx3)}.sk-dl{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;padding:3px;transition:color .2s}
+.sk-dl:hover{color:var(--rd)}
+.emp{text-align:center;padding:26px 13px}
+.emp-i{font-size:32px;margin-bottom:8px;display:block;opacity:.3}
+.emp-t{font-size:12px;color:var(--tx3);margin-bottom:3px}.emp-d{font:300 9px var(--M);color:var(--tx3)}
+
+/* INSTALL PANEL */
+.ins-hero{text-align:center;padding:18px 10px 20px;background:linear-gradient(135deg,rgba(201,168,76,.09),rgba(61,220,132,.06));border:1px solid rgba(201,168,76,.18);border-radius:var(--r);margin-bottom:14px}
+.ins-ic{font-size:40px;margin-bottom:10px;display:block}
+.ins-title{font-size:18px;font-weight:700;color:var(--gd);letter-spacing:-.2px;margin-bottom:5px}
+.ins-sub{font:300 10px/1.7 var(--M);color:var(--tx3)}
+.method-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.mcard{background:var(--cd);border:1px solid var(--br);border-radius:var(--r);overflow:hidden}
+.mcard-head{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .2s}
+.mcard-head:active{background:var(--cd2)}
+.mcard-head-ic{font-size:22px;flex-shrink:0;width:36px;height:36px;background:var(--sf);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.mcard-head-info{flex:1}
+.mcard-head-t{font-size:13px;font-weight:700}
+.mcard-head-s{font:300 9px var(--M);color:var(--tx3);margin-top:2px}
+.mcard-badge{font:700 8px var(--M);padding:2px 7px;border-radius:8px;flex-shrink:0}
+.badge-easy{background:var(--gn2);color:var(--gn)}.badge-free{background:var(--gd3);color:var(--gd)}.badge-2min{background:var(--bl2);color:var(--bl)}
+.mcard-expand{display:none;padding:0 14px 14px}
+.mcard-expand.open{display:block}
+.step-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--gd3);color:var(--gd);font:700 10px var(--M);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-txt{font:400 11px/1.55 var(--M);color:var(--tx2)}
+.step-txt b{color:var(--gd);font-weight:600}
+.step-txt code{background:var(--sf);border:1px solid var(--br);border-radius:4px;padding:1px 5px;font-size:10px;color:var(--gn)}
+.step-link{display:block;margin-top:5px;background:var(--gd3);border:1px solid rgba(201,168,76,.2);border-radius:7px;padding:7px 11px;font:700 11px var(--F);color:var(--gd);text-decoration:none;text-align:center;cursor:pointer;transition:all .15s}
+.step-link:active{background:var(--gd);color:#000}
+.tip-box{background:var(--gn3);border:1px solid rgba(61,220,132,.2);border-radius:7px;padding:9px 11px;font:300 10px/1.6 var(--M);color:var(--gn);margin-top:10px}
+.tip-box b{font-weight:600}
+.auto-install-btn{width:100%;padding:12px;background:var(--gd);color:#000;border:none;border-radius:var(--r);font:700 14px var(--F);cursor:pointer;transition:all .15s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.auto-install-btn:active{transform:scale(.97);background:var(--gd2)}
+.auto-install-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* SETTINGS */
+.abt{background:linear-gradient(135deg,rgba(201,168,76,.09),rgba(61,220,132,.06),rgba(123,156,255,.04));border:1px solid rgba(201,168,76,.16);border-radius:var(--r);padding:15px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden}
+.abt::before{content:'V';position:absolute;right:-6px;bottom:-25px;font:900 140px var(--F);color:rgba(201,168,76,.04);line-height:1;pointer-events:none}
+.abt-ic{font-size:30px;margin-bottom:6px;display:block}.abt-nm{font-size:15px;font-weight:700;letter-spacing:3px;color:var(--gd)}
+.abt-ver{font:400 8px var(--M);color:var(--tx3);margin-top:3px}
+.abt-cap{margin-top:6px;display:inline-block;background:var(--gd4);border:1px solid rgba(201,168,76,.16);border-radius:20px;padding:3px 10px;font:600 9px var(--M);color:var(--gd)}
+.abt-d{font:300 9px/1.7 var(--M);color:var(--tx3);margin-top:8px}
+.ssec{margin-bottom:15px}.slb{font:400 8px var(--M);letter-spacing:2px;color:var(--tx3);margin-bottom:7px}
+.sit{background:var(--cd);border:1px solid var(--br);border-radius:var(--rs);padding:10px 12px;display:flex;align-items:center;gap:9px;margin-bottom:5px}
+.si-ic{font-size:17px;flex-shrink:0}.si-in{flex:1}.si-t{font-size:12px;font-weight:600}.si-s{font:300 8px var(--M);color:var(--tx3);margin-top:2px}
+.tog{width:36px;height:20px;background:var(--br2);border-radius:10px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.tog.on{background:var(--gn)}.tog::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .2s}
+.tog.on::after{transform:translateX(16px)}
+.vs-row{display:flex;align-items:center;gap:9px;padding:8px 12px;background:var(--cd);border:1px solid var(--br);border-radius:var(--rs);margin-bottom:5px}
+.vs-lbl{font:400 10px var(--M);color:var(--tx2);flex-shrink:0;min-width:90px}
+.vs-val{font:600 10px var(--M);color:var(--gd);min-width:28px;text-align:right;flex-shrink:0}
+input[type=range]{flex:1;accent-color:var(--gn);cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- AUTO-LEARN TOAST -->
+<div id="alToast">
+  <span class="alt-ic" id="altIc">⚙️</span>
+  <div class="alt-body">
+    <div class="alt-title" id="altTitle">Agent is self-improving…</div>
+    <div class="alt-sub" id="altSub">Researching a new money-making skill in the background</div>
+  </div>
+  <button class="alt-close" onclick="hideToast()">✕</button>
+</div>
+
+<!-- INSTALL BANNER (Android Chrome auto-prompt) -->
+<div id="iBanner">
+  <span style="font-size:19px">📲</span>
+  <div class="ibt"><div class="ibtt">Install VAULT App</div><div class="ibts">Add to home screen · Works like native app</div></div>
+  <button class="ibb" onclick="doInstall()">Install</button>
+  <button class="ibc" onclick="document.getElementById('iBanner').style.display='none'">✕</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-m">V</div>
+  <div>
+    <div class="logo-n">VAULT</div>
+    <div class="logo-t">AI Money + Voice Agent</div>
+  </div>
+  <div class="hdr-r">
+    <div class="pill pill-pp" id="hdrLvl"><div class="dot"></div>LV 1</div>
+    <div class="pill pill-gn" id="hdrOnline"><div class="dot"></div>ONLINE</div>
+  </div>
+</header>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- ██ CHAT ██ -->
+  <div class="panel on" id="panelChat">
+    <div class="vmbar" id="vmbar" style="display:none">
+      <div class="vmbar-d"></div><span id="vmbarTxt">Voice mode active</span>
+      <button class="vmbar-x" onclick="closeVO()">✕</button>
+    </div>
+    <div class="cmsg" id="cmsg">
+      <div class="welcome" id="cWelcome">
+        <div class="wring">💎</div>
+        <h1>Meet <b>VAULT</b></h1>
+        <p>Voice &amp; chat · Self-learning AI · Product authenticator<br>Improves automatically · Always in your corner</p>
+      </div>
+      <div class="qgrid" id="cGrid">
+        <div class="qcard" onclick="sq('Give me 10 realistic ways to make money online and offline I can start this week')"><span class="qc-ic">💡</span><div class="qc-t">Income Ideas</div><div class="qc-d">10 ways to earn now</div></div>
+        <div class="qcard" onclick="sq('Give me a complete buy-and-sell resell business guide: sourcing, authenticating, pricing, best platforms')"><span class="qc-ic">🔄</span><div class="qc-t">Buy &amp; Sell Guide</div><div class="qc-d">Flip products for profit</div></div>
+        <div class="qcard" onclick="sq('What are the most profitable items to resell right now in 2025?')"><span class="qc-ic">🔥</span><div class="qc-t">Hot Resell Items</div><div class="qc-d">What sells for most</div></div>
+        <div class="qcard" onclick="sq('Build me a complete freelance strategy: niche, pricing, finding clients, scaling to $5k/month')"><span class="qc-ic">🧑‍💻</span><div class="qc-t">Freelance Strategy</div><div class="qc-d">Win clients &amp; raise rates</div></div>
+        <div class="qcard" onclick="sq('Explain beginner investing — ETFs, platforms, how to start with $500')"><span class="qc-ic">📈</span><div class="qc-t">Smart Investing</div><div class="qc-d">Grow money passively</div></div>
+        <div class="qcard" onclick="sq('Give me a 30-day action plan to earn my first $1,000 online from scratch')"><span class="qc-ic">🎯</span><div class="qc-t">$1K in 30 Days</div><div class="qc-d">Step-by-step plan</div></div>
+      </div>
+    </div>
+    <div class="cfoot">
+      <div class="inpwrap">
+        <textarea id="cIn" placeholder="Type or tap 🎙️ to speak to VAULT…" rows="1" onkeydown="hKey(event)" oninput="rsz(this)"></textarea>
+        <button class="snd-btn" id="sndBtn" onclick="sendChat()">➤</button>
+      </div>
+      <div class="hints">
+        <span class="hc" onclick="fh('How do I spot fake products when buying to resell?')">Spot fakes</span>
+        <span class="hc" onclick="fh('Best side hustles for 2025?')">Side hustles</span>
+        <span class="hc" onclick="fh('How to negotiate prices when buying to resell?')">Negotiate</span>
+        <span class="hc" onclick="fh('Which platforms pay most for selling items?')">Best platforms</span>
+        <span class="hc" onclick="fh('How to calculate resell profit margin?')">Profit margin</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ██ SCAN ██ -->
+  <div class="panel" id="panelScan">
+    <div class="scrl">
+      <div style="margin-bottom:12px"><div style="font-size:16px;font-weight:700">🔍 Product Authenticator</div><div style="font:300 9px var(--M);color:var(--tx3);margin-top:3px">Scan any barcode · AI web search · Instant verdict</div></div>
+      <div class="cat-row">
+        <div class="cat sel" data-c="Any Product" onclick="sCat(this)"><span class="cat-em">🏷️</span><span class="cat-lb">Any</span></div>
+        <div class="cat" data-c="Sneakers & Shoes" onclick="sCat(this)"><span class="cat-em">👟</span><span class="cat-lb">Shoes</span></div>
+        <div class="cat" data-c="Electronics & Gadgets" onclick="sCat(this)"><span class="cat-em">📱</span><span class="cat-lb">Electronics</span></div>
+        <div class="cat" data-c="Luxury Goods & Designer" onclick="sCat(this)"><span class="cat-em">👜</span><span class="cat-lb">Luxury</span></div>
+        <div class="cat" data-c="Clothing & Apparel" onclick="sCat(this)"><span class="cat-em">👕</span><span class="cat-lb">Clothing</span></div>
+        <div class="cat" data-c="Cosmetics & Beauty" onclick="sCat(this)"><span class="cat-em">💄</span><span class="cat-lb">Beauty</span></div>
+        <div class="cat" data-c="Food & Beverages" onclick="sCat(this)"><span class="cat-em">🍫</span><span class="cat-lb">Food</span></div>
+        <div class="cat" data-c="Watches & Jewelry" onclick="sCat(this)"><span class="cat-em">⌚</span><span class="cat-lb">Watches</span></div>
+        <div class="cat" data-c="Pharmaceuticals & Supplements" onclick="sCat(this)"><span class="cat-em">💊</span><span class="cat-lb">Medicine</span></div>
+        <div class="cat" data-c="Collectibles & Cards" onclick="sCat(this)"><span class="cat-em">🃏</span><span class="cat-lb">Collectibles</span></div>
+        <div class="cat" data-c="Sports Equipment" onclick="sCat(this)"><span class="cat-em">⚽</span><span class="cat-lb">Sports</span></div>
+        <div class="cat" data-c="Toys & Games" onclick="sCat(this)"><span class="cat-em">🎮</span><span class="cat-lb">Toys</span></div>
+      </div>
+      <div class="mtabs">
+        <div class="mt sel" id="mt-cam" onclick="setM('cam')"><span class="mt-ic">📷</span><div class="mt-lb">Scan</div><div class="mt-sub">Camera barcode</div></div>
+        <div class="mt" id="mt-type" onclick="setM('type')"><span class="mt-ic">⌨️</span><div class="mt-lb">Type</div><div class="mt-sub">Name / SKU</div></div>
+        <div class="mt" id="mt-photo" onclick="setM('photo')"><span class="mt-ic">🖼️</span><div class="mt-lb">Photo</div><div class="mt-sub">AI vision check</div></div>
+      </div>
+      <div class="card" id="m-cam">
+        <div id="vw"><video id="cam" autoplay muted playsinline></video><div class="sov"><div class="sfr"><div class="sln"></div><div class="sc tl"></div><div class="sc tr"></div><div class="sc bl"></div><div class="sc br"></div></div></div><div class="chint">Point at any barcode or QR code</div></div>
+        <div style="padding:11px 13px"><label class="flabel">SCANNED BARCODE</label><input type="text" id="camCode" class="finput" placeholder="Auto-detected, or type manually…" style="margin-bottom:0"></div>
+        <div class="row-btns">
+          <button class="btn btn-gn" id="bStart" onclick="startCam()">📷 Start Camera</button>
+          <button class="btn btn-rd" id="bStop" onclick="stopCam()" style="display:none">⏹ Stop</button>
+          <button class="btn btn-gd" id="bVCam" onclick="verifyCam()" disabled>🔍 Verify</button>
+        </div>
+      </div>
+      <div class="card" id="m-type" style="display:none">
+        <div style="padding:13px">
+          <label class="flabel">PRODUCT NAME, MODEL, SKU OR BARCODE</label>
+          <input type="text" id="typeQ" class="finput" placeholder="e.g. Nike Air Force 1, iPhone 15, Rolex Submariner…">
+          <label class="flabel">BRAND</label>
+          <input type="text" id="typeBr" class="finput" placeholder="e.g. Nike, Apple, Rolex…">
+          <label class="flabel">PRICE PAID (optional)</label>
+          <input type="text" id="typePr" class="finput" placeholder="e.g. $85 or ₱4,500" style="margin-bottom:0">
+        </div>
+        <div class="row-btns"><button class="btn btn-gd" onclick="verifyType()">🔍 Authenticate + Check Value</button></div>
+      </div>
+      <div class="card" id="m-photo" style="display:none">
+        <div style="padding:13px">
+          <div class="upz"><input type="file" id="phFile" accept="image/*" onchange="loadPh(event)"><span class="up-i">📸</span><div class="up-t">Tap to upload or take photo</div><div class="up-s">Show item, box, label, logo, stitching</div><img id="pp" alt=""></div>
+          <div style="margin-top:10px">
+            <label class="flabel">BRAND (optional)</label>
+            <input type="text" id="phBr" class="finput" placeholder="e.g. Gucci, Samsung…">
+            <label class="flabel">EXTRA CONTEXT (optional)</label>
+            <input type="text" id="phNt" class="finput" placeholder="e.g. bought from marketplace…" style="margin-bottom:0">
+          </div>
+        </div>
+        <div class="row-btns"><button class="btn btn-gd" id="bPh" onclick="verifyPhoto()" disabled>🧠 AI Visual Analysis</button></div>
+      </div>
+      <div id="ab"><span class="sp">⚙️</span><div style="font:300 10px var(--M);color:var(--tx3)" id="abLbl">Analyzing…</div><div class="slist" id="slist"></div></div>
+      <div id="rb"></div>
+      <div class="hsec" id="hSec" style="display:none"><div class="hlb">RECENT SCANS</div><div id="hList"></div></div>
+    </div>
+  </div>
+
+  <!-- ██ SKILLS ██ -->
+  <div class="panel" id="panelSkills">
+    <div class="scrl">
+      <div class="sk-top">
+        <div><h2>🧠 Agent Skills</h2><div style="font:300 9px var(--M);color:var(--tx3);margin-top:2px">Auto self-learning · Persistent · Smarter every session</div></div>
+        <div class="lring"><div class="ln" id="lvlN">1</div><div class="ll">LEVEL</div></div>
+      </div>
+      <div class="xpw"><div class="xpt"><span class="xpl">EXPERIENCE</span><span class="xpv" id="xpV">0 / 100 XP</span></div><div class="xpb"><div class="xpf" id="xpF" style="width:0%"></div></div></div>
+
+      <!-- AUTO-LEARN STATUS -->
+      <div class="al-status">
+        <span class="al-st-ic">🤖</span>
+        <div class="al-st-inf">
+          <div class="al-st-t">Auto Self-Improvement: ACTIVE</div>
+          <div class="al-st-s" id="alStatusTxt">VAULT learns a new money skill automatically every session. No commands needed.</div>
+        </div>
+        <div class="al-st-badge" id="alBadge">AUTO</div>
+      </div>
+
+      <div class="learn-card">
+        <div class="lh"><span class="lh-i">⚡</span><div><div class="lh-t">Manually Teach a Skill</div><div class="lh-s">Or let VAULT learn automatically every session</div></div></div>
+        <div class="lform">
+          <label class="flabel">TOPIC TO LEARN</label>
+          <div class="lrow">
+            <input type="text" id="lIn" class="linp" placeholder="e.g. Dropshipping, Crypto, Amazon FBA…" onkeydown="if(event.key==='Enter')lrnSkill()">
+            <button class="btn btn-bl" onclick="lrnSkill()">⚡ Learn</button>
+          </div>
+          <div class="sugs">
+            <span class="sug" onclick="qLrn('Sneaker authentication — spotting replicas for Nike Jordan Adidas')">👟 Sneaker Auth</span>
+            <span class="sug" onclick="qLrn('Amazon FBA product sourcing and reselling strategy 2025')">📦 Amazon FBA</span>
+            <span class="sug" onclick="qLrn('Cryptocurrency trading basics and profit strategies')">₿ Crypto</span>
+            <span class="sug" onclick="qLrn('Dropshipping business model and supplier sourcing')">🚚 Dropshipping</span>
+            <span class="sug" onclick="qLrn('Stock market ETF investing for beginners')">📊 Stocks</span>
+            <span class="sug" onclick="qLrn('Social media monetization and creator income streams')">📱 Creator Income</span>
+            <span class="sug" onclick="qLrn('eBay and Facebook Marketplace reselling tactics')">🛒 eBay/FB</span>
+            <span class="sug" onclick="qLrn('Luxury goods authentication: handbags watches jewelry')">👜 Luxury Auth</span>
+            <span class="sug" onclick="qLrn('Affiliate marketing strategies and best platforms')">🔗 Affiliate</span>
+          </div>
+        </div>
+        <div id="lp"><div style="font:400 9px var(--M);color:var(--bl);letter-spacing:1px" id="lpLbl">Researching…</div><div class="lps" id="lpS"></div></div>
+      </div>
+      <div class="sgrid" id="sgrid"></div>
+      <div class="emp" id="empSt"><span class="emp-i">🧠</span><div class="emp-t">No skills yet — auto-learning on next session</div><div class="emp-d">VAULT automatically learns on every app open.<br>Or tap any suggestion above to learn now.</div></div>
+    </div>
+  </div>
+
+  <!-- ██ INSTALL GUIDE ██ -->
+  <div class="panel" id="panelInstall">
+    <div class="scrl">
+
+      <div class="ins-hero">
+        <span class="ins-ic">📲</span>
+        <div class="ins-title">Install VAULT on Android</div>
+        <div class="ins-sub">3 methods — all free, all from your phone only.<br>Pick the easiest one for you.</div>
+      </div>
+
+      <!-- AUTO INSTALL BUTTON (shows when Chrome detects PWA) -->
+      <div id="autoInstallWrap" style="display:none;margin-bottom:14px">
+        <button class="auto-install-btn" onclick="doInstall()" id="autoInstallBtn">
+          📲 Install VAULT Now (One Tap)
+        </button>
+        <div style="text-align:center;margin-top:6px;font:300 9px var(--M);color:var(--tx3)">Chrome detected this PWA automatically — tap above to install instantly</div>
+      </div>
+
+      <div class="method-cards">
+
+        <!-- METHOD 1: tiiny.host -->
+        <div class="mcard">
+          <div class="mcard-head" onclick="toggleMethod('m1')">
+            <div class="mcard-head-ic">🌐</div>
+            <div class="mcard-head-info">
+              <div class="mcard-head-t">Method 1 — tiiny.host</div>
+              <div class="mcard-head-s">Upload file from your phone · Get link · Install</div>
+            </div>
+            <span class="mcard-badge badge-easy">EASIEST</span>
+          </div>
+          <div class="mcard-expand" id="m1">
+            <div class="step-row"><div class="step-num">1</div><div class="step-txt">First, download all 4 VAULT files to your phone from this app (tap the download buttons below)</div></div>
+            <div class="step-row"><div class="step-num">2</div><div class="step-txt">Open Chrome on your Android phone and go to <b>tiiny.host</b><a class="step-link" href="https://tiiny.host" target="_blank">Open tiiny.host →</a></div></div>
+            <div class="step-row"><div class="step-num">3</div><div class="step-txt">Tap <b>"Upload a zip or folder"</b> — zip your 4 vault files first using a file manager app like ZArchiver (free on Play Store)</div></div>
+            <div class="step-row"><div class="step-num">4</div><div class="step-txt">Upload the zip → tiiny.host gives you a free link like <code>vault.tiiny.site</code></div></div>
+            <div class="step-row"><div class="step-num">5</div><div class="step-txt">Open that link in Chrome → tap the <b>⋮ menu → "Add to Home screen" → Install</b></div></div>
+            <div class="tip-box"><b>✅ Done!</b> VAULT appears on your home screen like a real app. Free forever.</div>
+          </div>
+        </div>
+
+        <!-- METHOD 2: Netlify -->
+        <div class="mcard">
+          <div class="mcard-head" onclick="toggleMethod('m2')">
+            <div class="mcard-head-ic">☁️</div>
+            <div class="mcard-head-info">
+              <div class="mcard-head-t">Method 2 — Netlify Drop</div>
+              <div class="mcard-head-s">Drag &amp; drop hosting · Professional · Free</div>
+            </div>
+            <span class="mcard-badge badge-free">FREE</span>
+          </div>
+          <div class="mcard-expand" id="m2">
+            <div class="step-row"><div class="step-num">1</div><div class="step-txt">Install <b>ZArchiver</b> from Play Store (free) to create a zip file of your 4 VAULT files</div></div>
+            <div class="step-row"><div class="step-num">2</div><div class="step-txt">Open Chrome and go to <b>app.netlify.com/drop</b><a class="step-link" href="https://app.netlify.com/drop" target="_blank">Open Netlify Drop →</a></div></div>
+            <div class="step-row"><div class="step-num">3</div><div class="step-txt">Tap <b>"Browse to upload"</b> → select your zip → wait for upload to finish</div></div>
+            <div class="step-row"><div class="step-num">4</div><div class="step-txt">Netlify gives you a free HTTPS link (e.g. <code>glowing-fox-123.netlify.app</code>)</div></div>
+            <div class="step-row"><div class="step-num">5</div><div class="step-txt">Open the link in Chrome → <b>⋮ → Add to Home screen → Install</b></div></div>
+            <div class="tip-box"><b>✅ Done!</b> Your app stays live free for 100GB bandwidth/month.</div>
+          </div>
+        </div>
+
+        <!-- METHOD 3: GitHub Pages -->
+        <div class="mcard">
+          <div class="mcard-head" onclick="toggleMethod('m3')">
+            <div class="mcard-head-ic">🐱</div>
+            <div class="mcard-head-info">
+              <div class="mcard-head-t">Method 3 — GitHub Pages</div>
+              <div class="mcard-head-s">Free forever · Custom URL · Developer choice</div>
+            </div>
+            <span class="mcard-badge badge-2min">2 MIN</span>
+          </div>
+          <div class="mcard-expand" id="m3">
+            <div class="step-row"><div class="step-num">1</div><div class="step-txt">Install the <b>GitHub</b> app from Play Store and create a free account</div></div>
+            <div class="step-row"><div class="step-num">2</div><div class="step-txt">On GitHub mobile, tap <b>+</b> → <b>New repository</b> → name it <code>vault-app</code> → tap Create</div></div>
+            <div class="step-row"><div class="step-num">3</div><div class="step-txt">Tap the repo → <b>Add file</b> → upload each of the 4 VAULT files one by one</div></div>
+            <div class="step-row"><div class="step-num">4</div><div class="step-txt">Go to repo <b>Settings → Pages → Source: main branch</b> → Save</div></div>
+            <div class="step-row"><div class="step-num">5</div><div class="step-txt">GitHub gives you <code>yourusername.github.io/vault-app</code> — open in Chrome → <b>Install</b></div></div>
+            <div class="tip-box"><b>✅ Done!</b> Free forever. Your custom URL never expires.</div>
+          </div>
+        </div>
+
+        <!-- METHOD 4: After install via Chrome banner -->
+        <div class="mcard">
+          <div class="mcard-head" onclick="toggleMethod('m4')">
+            <div class="mcard-head-ic">🔔</div>
+            <div class="mcard-head-info">
+              <div class="mcard-head-t">After hosting — Install from Chrome</div>
+              <div class="mcard-head-s">How to trigger the install prompt manually</div>
+            </div>
+            <span class="mcard-badge badge-easy">FINAL STEP</span>
+          </div>
+          <div class="mcard-expand" id="m4">
+            <div class="step-row"><div class="step-num">1</div><div class="step-txt">Open your VAULT link in <b>Chrome for Android</b> (not Samsung Browser, not Firefox)</div></div>
+            <div class="step-row"><div class="step-num">2</div><div class="step-txt">Wait 2-3 seconds — Chrome shows a banner at the bottom: <b>"Add VAULT to Home screen"</b> → tap Install</div></div>
+            <div class="step-row"><div class="step-num">3</div><div class="step-txt">If no banner: tap the <b>⋮ three dots</b> in top-right corner → tap <b>"Add to Home screen"</b> → tap <b>Add</b></div></div>
+            <div class="step-row"><div class="step-num">4</div><div class="step-txt">VAULT icon appears on your home screen — tap it to open full-screen like a native app ✅</div></div>
+            <div class="tip-box"><b>🎙️ Voice, 📷 Camera, 🔍 Scan</b> all work after install. Allow permissions when prompted.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- DOWNLOAD BUTTONS -->
+      <div style="background:var(--cd);border:1px solid var(--br);border-radius:var(--r);padding:13px;margin-bottom:14px">
+        <div class="flabel" style="margin-bottom:10px">DOWNLOAD VAULT FILES TO YOUR PHONE</div>
+        <div style="font:300 10px/1.6 var(--M);color:var(--tx3);margin-bottom:10px">Save all 4 files in the same folder, then zip and upload using a method above.</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <button class="btn btn-gd" style="width:100%;justify-content:center" onclick="dlFile('index')">⬇️ Download index.html (main app)</button>
+          <button class="btn btn-gh" style="width:100%;justify-content:center" onclick="dlFile('sw')">⬇️ Download sw.js (offline)</button>
+          <button class="btn btn-gh" style="width:100%;justify-content:center" onclick="dlFile('manifest')">⬇️ Download manifest.json (PWA)</button>
+          <button class="btn btn-gh" style="width:100%;justify-content:center" onclick="dlFile('icon')">⬇️ Download icon.svg (app icon)</button>
+        </div>
+      </div>
+
+      <div style="background:var(--gn3);border:1px solid rgba(61,220,132,.2);border-radius:var(--r);padding:12px;font:300 10px/1.7 var(--M);color:var(--gn)">
+        <b style="font-weight:700;display:block;margin-bottom:4px">💡 Quick Tip</b>
+        The fastest method is tiiny.host — open it right now in Chrome, zip your 4 files, upload, get a link, open the link, and install. Takes under 5 minutes, all from your phone.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ██ SETTINGS ██ -->
+  <div class="panel" id="panelSettings">
+    <div class="scrl">
+      <div class="abt">
+        <span class="abt-ic">💎</span>
+        <div class="abt-nm">VAULT</div>
+        <div class="abt-ver">v5.0 · PWA · Voice + Auto Self-Learning + Universal Auth</div>
+        <div class="abt-cap" id="abtCap">Level 1 · 0 Skills · Auto-Improving</div>
+        <div class="abt-d">Voice &amp; chat · Scan any barcode · Self-learns every session<br>Install on any device · Always getting smarter</div>
+      </div>
+
+      <!-- VOICE SETTINGS -->
+      <div class="ssec">
+        <div class="slb">VOICE SETTINGS</div>
+        <div class="sit"><span class="si-ic">🔊</span><div class="si-in"><div class="si-t">VAULT Speaks Responses</div><div class="si-s">Agent reads replies aloud</div></div><button class="tog on" id="togSpk" onclick="this.classList.toggle('on');updVoice()"></button></div>
+        <div class="sit"><span class="si-ic">🔁</span><div class="si-in"><div class="si-t">Continuous Voice Mode</div><div class="si-s">Auto-listens again after speaking (hands-free)</div></div><button class="tog" id="togCont" onclick="this.classList.toggle('on')"></button></div>
+        <div class="vs-row"><span class="vs-lbl">🐢 Speed</span><input type="range" id="rSpd" min="0.6" max="1.8" step="0.1" value="1" oninput="document.getElementById('vSpd').textContent=parseFloat(this.value).toFixed(1)+'×';updVoice()"><span class="vs-val" id="vSpd">1.0×</span></div>
+        <div class="vs-row"><span class="vs-lbl">🎵 Pitch</span><input type="range" id="rPit" min="0.5" max="1.8" step="0.1" value="1" oninput="document.getElementById('vPit').textContent=parseFloat(this.value).toFixed(1);updVoice()"><span class="vs-val" id="vPit">1.0</span></div>
+        <div class="sit" style="flex-direction:column;align-items:flex-start;gap:5px">
+          <span style="font:400 8px var(--M);letter-spacing:2px;color:var(--tx3)">VOICE LANGUAGE</span>
+          <select id="selVoc" class="finput" style="margin-bottom:0" onchange="updVoice()"><option value="">Default voice</option></select>
+        </div>
+      </div>
+
+      <!-- AUTO-LEARN SETTINGS -->
+      <div class="ssec">
+        <div class="slb">AUTO SELF-IMPROVEMENT</div>
+        <div class="sit"><span class="si-ic">🤖</span><div class="si-in"><div class="si-t">Auto-Learn on Every Session</div><div class="si-s" id="alSetSub">Learns a new money skill each time you open VAULT</div></div><button class="tog on" id="togAL" onclick="this.classList.toggle('on')"></button></div>
+        <div class="sit"><span class="si-ic">🔔</span><div class="si-in"><div class="si-t">Show Learning Notifications</div><div class="si-s">Toast notification when auto-learning happens</div></div><button class="tog on" id="togALN" onclick="this.classList.toggle('on')"></button></div>
+      </div>
+
+      <div class="ssec">
+        <div class="slb">DATA</div>
+        <div class="sit"><span class="si-ic">🗑️</span><div class="si-in"><div class="si-t">Clear All Skills</div><div class="si-s">Resets all learned agent knowledge</div></div><button class="btn btn-rd" style="font-size:10px;padding:5px 10px" onclick="clearSkills()">Clear</button></div>
+      </div>
+      <div class="ssec">
+        <div class="slb">ABOUT</div>
+        <div class="sit"><span class="si-ic">🤖</span><div class="si-in"><div class="si-t">Powered by Claude AI</div><div class="si-s">Anthropic claude-sonnet-4 with web search</div></div></div>
+        <div class="sit"><span class="si-ic">🔒</span><div class="si-in"><div class="si-t">Privacy First</div><div class="si-s">Skills stored on your device · No server logging</div></div></div>
+        <div class="sit" style="cursor:pointer" onclick="goTab('install')"><span class="si-ic">📲</span><div class="si-in"><div class="si-t">Install Guide</div><div class="si-s">Step-by-step phone installation instructions</div></div><span style="font-size:14px;color:var(--tx3)">›</span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app-body -->
+
+<!-- TAB BAR -->
+<nav class="tabs" style="position:relative">
+  <button class="tab on" id="tab-chat" onclick="goTab('chat')"><span class="tab-ic">💬</span>Chat</button>
+  <button class="tab" id="tab-scan" onclick="goTab('scan')"><span class="tab-ic">🔍</span>Scan<span class="tbadge">ANY</span></button>
+  <div class="mic-fab" id="mFab" onclick="tglVoice()" title="Tap to speak">🎙️</div>
+  <button class="tab" id="tab-skills" onclick="goTab('skills')"><span class="tab-ic">🧠</span>Skills</button>
+  <button class="tab" id="tab-install" onclick="goTab('install')"><span class="tab-ic">📲</span>Install</button>
+</nav>
+
+<!-- VOICE OVERLAY -->
+<div id="vOv">
+  <div class="vo-rings" id="voR"><div class="vor"></div><div class="vor"></div><div class="vor"></div><div class="vo-core" id="voC">🎙️</div></div>
+  <div class="waveform" id="wf"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+  <div class="vo-st idle" id="voSt">TAP TO SPEAK</div>
+  <div class="vo-tr" id="voTr">Say anything — "What should I resell?" or "Is this Nike real?"</div>
+  <div class="vo-btns">
+    <button class="vo-btn vob-rd" onclick="stopLstn()">⏹ Stop</button>
+    <button class="vo-btn vob-gd" onclick="startLstn()">🎙️ Speak</button>
+    <button class="vo-btn vob-gh" onclick="closeVO()">✕ Close</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ════ PWA ════
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+let dPr=null;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+const isSA=window.matchMedia('(display-mode:standalone)').matches||navigator.standalone;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();dPr=e;
+  if(!isSA){
+    document.getElementById('iBanner').style.display='flex';
+    document.getElementById('autoInstallWrap').style.display='block';
+  }
+});
+function doInstall(){
+  if(dPr){dPr.prompt();dPr.userChoice.then(r=>{if(r.outcome==='accepted'){document.getElementById('iBanner').style.display='none';document.getElementById('autoInstallBtn').textContent='✅ Installed!';document.getElementById('autoInstallBtn').disabled=true;}dPr=null;});}
+}
+window.addEventListener('online',()=>document.getElementById('hdrOnline').lastChild.textContent='ONLINE');
+window.addEventListener('offline',()=>document.getElementById('hdrOnline').lastChild.textContent='OFFLINE');
+const urlTab=new URLSearchParams(location.search).get('tab');
+if(urlTab) setTimeout(()=>goTab(urlTab),50);
+
+// ════ TABS ════
+function goTab(n){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('panel'+n.charAt(0).toUpperCase()+n.slice(1)).classList.add('on');
+  const tb=document.getElementById('tab-'+n);if(tb)tb.classList.add('on');
+  if(n!=='scan')stopCam();
+}
+
+// ════ SKILLS STORAGE ════
+const SK='vault_skills_v5';
+const AL_KEY='vault_auto_learn_v5';
+function loadSK(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch{return[];}}
+function saveSK(a){localStorage.setItem(SK,JSON.stringify(a));}
+
+const SCOLS=['#c9a84c','#3ddc84','#7b9cff','#ff9f55','#b48eff','#ff5599','#55d4ff','#ff9f55'];
+const ICO_MAP={finance:'📈',trading:'📊',crypto:'₿',invest:'💵',stock:'📉',shoe:'👟',sneaker:'👟',luxury:'👜',watch:'⌚',jewelry:'💎',amazon:'📦',ebay:'🛒',drop:'🚚',affiliate:'🔗',social:'📱',content:'🎥',real:'🏠',estate:'🏗️',freelance:'💼',business:'🚀',default:'🧠'};
+function skIco(n){const l=n.toLowerCase();for(const[k,v]of Object.entries(ICO_MAP))if(l.includes(k))return v;return'🧠';}
+function skCol(n,i){const l=n.toLowerCase();if(l.match(/finance|trading|crypto|invest|stock/))return SCOLS[0];if(l.match(/shoe|sneaker|luxury|watch|jewelry/))return SCOLS[1];if(l.match(/amazon|ebay|drop|resell/))return SCOLS[3];if(l.match(/social|content|youtube|affiliate/))return SCOLS[2];return SCOLS[i%SCOLS.length];}
+
+function refUI(){
+  const sk=loadSK();
+  const xp=sk.length*25;
+  const lv=Math.floor(xp/100)+1;
+  const lxp=xp%100;
+  document.getElementById('lvlN').textContent=lv;
+  document.getElementById('hdrLvl').lastChild.textContent='LV '+lv;
+  document.getElementById('xpV').textContent=lxp+' / 100 XP';
+  document.getElementById('xpF').style.width=lxp+'%';
+  document.getElementById('abtCap').textContent='Level '+lv+' · '+sk.length+' Skill'+(sk.length!==1?'s':'')+' · Auto-Improving';
+  const grid=document.getElementById('sgrid');
+  const emp=document.getElementById('empSt');
+  if(!sk.length){grid.innerHTML='';emp.style.display='block';return;}
+  emp.style.display='none';
+  grid.innerHTML=sk.map((s,i)=>{
+    const c=skCol(s.name,i);
+    const d=new Date(s.date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const auto=s.auto?'<span class="tag tag-gn">Auto-Learned</span>':'<span class="tag tag-bl">Manual</span>';
+    return`<div class="sk" style="--sk-c:${c}"><div class="sk-h"><span class="sk-ic">${skIco(s.name)}</span><div class="sk-ti"><div class="sk-nm">${s.name}</div><div class="sk-m">${auto}</div></div></div><div class="sk-bd">${s.insights}</div><div class="sk-ft"><span class="sk-dt">${s.auto?'🤖 Auto · ':'⚡ Manual · '}${d}</span><button class="sk-dl" onclick="delSK(${i})">🗑️</button></div></div>`;
+  }).join('');
+}
+function delSK(i){const a=loadSK();a.splice(i,1);saveSK(a);refUI();}
+function clearSkills(){if(confirm('Remove all learned skills? This resets the agent\'s knowledge.')){saveSK([]);localStorage.removeItem(AL_KEY);refUI();}}
+
+// ════ AUTO SELF-IMPROVEMENT ENGINE ════
+// Topic rotation pool — agent cycles through these automatically
+const AUTO_TOPICS = [
+  'Sneaker reselling authentication and spotting fake Nike Jordan Adidas shoes',
+  'Dropshipping business model 2025 — best niches, suppliers, profit margins',
+  'Amazon FBA product sourcing and reselling strategy for beginners',
+  'eBay and Facebook Marketplace flipping tactics — what sells, how to price',
+  'Cryptocurrency trading basics — Bitcoin Ethereum altcoins, when to buy sell',
+  'Stock market ETF index fund investing for beginners with real numbers',
+  'Affiliate marketing income strategies and best platforms in 2025',
+  'Social media monetization — TikTok YouTube Instagram creator income',
+  'Luxury goods authentication — handbags watches jewelry how to spot fakes',
+  'Real estate wholesaling and house flipping basics for beginners',
+  'Freelancing platforms — Upwork Fiverr Toptal how to win high-paying clients',
+  'Electronics reselling — iPhones laptops gaming consoles authentication tips',
+  'Print-on-demand business model Redbubble Merch by Amazon Printful',
+  'Trading card authentication and reselling — Pokemon Yugioh sports cards',
+  'Thrift store flipping — what to look for, best items, profit margins',
+  'Shopify dropshipping store setup and product selection 2025',
+  'Peer-to-peer lending and alternative investment platforms',
+  'Content creation and digital product income — courses ebooks templates',
+  'Gold silver precious metals buying and reselling strategy',
+  'Clothing and apparel authentication — Supreme Stussy Off-White spotting fakes',
+];
+
+async function runAutoLearn(){
+  // Check if auto-learn is enabled
+  if(!document.getElementById('togAL').classList.contains('on')) return;
+
+  const sk=loadSK();
+  // Get last auto-learn index
+  let lastIdx = parseInt(localStorage.getItem(AL_KEY+'-idx')||'-1');
+  let nextIdx = (lastIdx + 1) % AUTO_TOPICS.length;
+
+  // Don't re-learn if we already know this topic (fuzzy match)
+  const topic = AUTO_TOPICS[nextIdx];
+  const alreadyKnows = sk.some(s => {
+    const sn = s.name.toLowerCase();
+    const tw = topic.toLowerCase().split(' ').slice(0,2).join(' ');
+    return sn.includes(tw.split(' ')[0]) || sn.includes(tw.split(' ')[1]||'');
+  });
+
+  if(alreadyKnows){
+    nextIdx = (nextIdx + 1) % AUTO_TOPICS.length;
+  }
+
+  localStorage.setItem(AL_KEY+'-idx', nextIdx);
+
+  const showNotif = document.getElementById('togALN').classList.contains('on');
+
+  // Show toast
+  if(showNotif) showToast('🤖 Auto-learning…', 'Researching: '+AUTO_TOPICS[nextIdx].substring(0,50)+'…');
+
+  await runLearn(AUTO_TOPICS[nextIdx], true);
+
+  if(showNotif){
+    const sk2=loadSK();
+    const newest = sk2[0];
+    showToast('✅ New skill learned!', (newest?.name||AUTO_TOPICS[nextIdx])+' — VAULT just got smarter', true);
+  }
+}
+
+function showToast(title, sub, done=false){
+  const t=document.getElementById('alToast');
+  const ic=document.getElementById('altIc');
+  document.getElementById('altTitle').textContent=title;
+  document.getElementById('altSub').textContent=sub;
+  ic.className='alt-ic'+(done?' alt-done':'');
+  ic.textContent=done?'✅':'⚙️';
+  t.classList.add('show');
+  if(done) setTimeout(()=>hideToast(),4000);
+}
+function hideToast(){document.getElementById('alToast').classList.remove('show');}
+
+// ════ LEARN SKILL ════
+const L_STEPS=['Connecting to Claude AI…','Searching the web for latest info…','Reading top sources…','Extracting money-making insights…','Saving to agent knowledge base…'];
+
+async function lrnSkill(){const i=document.getElementById('lIn');const t=i.value.trim();if(!t){alert('Enter a topic to learn.');return;}i.value='';await runLearn(t,false);}
+function qLrn(t){runLearn(t,false);}
+
+async function runLearn(topic, isAuto=false){
+  const prog=document.getElementById('lp');
+  const lbl=document.getElementById('lpLbl');
+  const sc=document.getElementById('lpS');
+  if(!isAuto){prog.style.display='block';}
+  if(lbl) lbl.textContent='Researching: '+topic;
+  if(sc) sc.innerHTML=L_STEPS.map((s,i)=>`<div class="lps-i" id="ls${i}"><div class="si-d"></div>${s}</div>`).join('');
+
+  let ti=0;
+  const adv=setInterval(()=>{
+    if(ti>0)document.getElementById('ls'+(ti-1))?.setAttribute('class','lps-i dn');
+    const el=document.getElementById('ls'+ti);if(el)el.setAttribute('class','lps-i ac');
+    ti++;if(ti>=L_STEPS.length)clearInterval(adv);
+  },900);
+
+  const prompt=`You are a research agent focused on money-making. Research: "${topic}"
+Extract the most valuable, actionable money-making insights. Include specific platforms, numbers, strategies.
+Return ONLY valid JSON (no markdown):
+{"name":"concise skill name max 6 words","insights":"5-7 bullet points using • on separate lines. Specific, actionable, real numbers/platforms. Max 420 chars total."}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    clearInterval(adv);
+    L_STEPS.forEach((_,j)=>document.getElementById('ls'+j)?.setAttribute('class','lps-i dn'));
+    const txt=data.content?.map(b=>b.text||'').filter(Boolean).join('')||'';
+    const m=txt.replace(/```json|```/g,'').trim().match(/\{[\s\S]*\}/);
+    let sk;try{sk=JSON.parse(m?m[0]:txt);}catch{sk={name:topic,insights:'• '+txt.substring(0,380)};}
+    const skills=loadSK();
+    skills.unshift({name:sk.name||topic,insights:sk.insights||'',date:Date.now(),source:'web',auto:isAuto});
+    saveSK(skills);refUI();
+    setTimeout(()=>{if(prog)prog.style.display='none';},1200);
+  }catch(e){
+    clearInterval(adv);
+    if(prog)prog.style.display='none';
+    if(!isAuto)alert('Could not learn skill. Check internet connection.');
+  }
+}
+
+// Build system prompt including all skills
+function buildSys(){
+  const sk=loadSK();
+  const base=`You are VAULT — a sharp AI money agent with voice. Help users earn money, buy/sell smarter, authenticate any product.
+
+Expertise: reselling/buy-sell (shoes, electronics, luxury, any product), product authentication, pricing strategy, profit calculation, best platforms, negotiation, freelancing, online business, investing basics, side hustles.
+
+Voice mode: keep answers concise, natural, conversational (2-4 sentences per point). No markdown in voice. Plain sentences.
+Text mode: use formatting freely.
+
+Style: Direct, specific, real numbers, platform names, steps. No fluff.`;
+  if(!sk.length) return base;
+  return base+'\n\n━━ VAULT LEARNED SKILLS (use in every response) ━━\n'+sk.map(s=>s.name+':\n'+s.insights).join('\n\n');
+}
+
+// ════ VOICE ENGINE ════
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let recog=null,vActive=false,vListening=false,vSpeaking=false;
+let vCfg={speak:true,speed:1,pitch:1,voiceURI:''};
+let curUtt=null;
+
+function populateVoices(){
+  const vs=speechSynthesis.getVoices();
+  const sel=document.getElementById('selVoc');
+  const prev=sel.value;
+  sel.innerHTML='<option value="">Default voice</option>';
+  vs.forEach(v=>{const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o);});
+  if(prev)sel.value=prev;
+}
+populateVoices();
+speechSynthesis.addEventListener('voiceschanged',populateVoices);
+
+function updVoice(){
+  vCfg.speak=document.getElementById('togSpk').classList.contains('on');
+  vCfg.speed=parseFloat(document.getElementById('rSpd').value);
+  vCfg.pitch=parseFloat(document.getElementById('rPit').value);
+  vCfg.voiceURI=document.getElementById('selVoc').value;
+}
+
+function speak(text,onDone){
+  if(!vCfg.speak&&!vActive) return;
+  const clean=text.replace(/\*\*(.*?)\*\*/g,'$1').replace(/\*(.*?)\*/g,'$1').replace(/`(.*?)`/g,'$1').replace(/^#+\s+/gm,'').replace(/^[-•›·]\s*/gm,'').replace(/^\d+\.\s*/gm,'').replace(/<[^>]*>/g,'').substring(0,700);
+  speechSynthesis.cancel();
+  curUtt=new SpeechSynthesisUtterance(clean);
+  curUtt.rate=vCfg.speed;curUtt.pitch=vCfg.pitch;
+  if(vCfg.voiceURI){const v=speechSynthesis.getVoices().find(v=>v.voiceURI===vCfg.voiceURI);if(v)curUtt.voice=v;}
+  curUtt.onstart=()=>{vSpeaking=true;setVSt('spk');};
+  curUtt.onend=curUtt.onerror=()=>{
+    vSpeaking=false;
+    if(vActive)setVSt('idle');else setVSt('off');
+    if(onDone)onDone();
+    if(vActive&&document.getElementById('togCont').classList.contains('on'))setTimeout(()=>startLstn(),600);
+  };
+  speechSynthesis.speak(curUtt);
+}
+
+function setVSt(st){
+  const fab=document.getElementById('mFab');
+  const rw=document.getElementById('voR');
+  const vc=document.getElementById('voC');
+  const vs=document.getElementById('voSt');
+  const wf=document.getElementById('wf');
+  const vb=document.getElementById('vmbar');
+  fab.className='mic-fab'+(st==='lst'?' lst':st==='spk'?' spk':'');
+  rw.className='vo-rings'+(st==='lst'?' lst':st==='spk'?' spk':'');
+  wf.className='waveform'+(st==='lst'?' lst':st==='spk'?' spk':'');
+  if(st==='lst'){vc.textContent='🎤';vs.className='vo-st lst';vs.textContent='LISTENING…';fab.textContent='🎤';}
+  else if(st==='spk'){vc.textContent='🔊';vs.className='vo-st spk';vs.textContent='VAULT IS SPEAKING…';fab.textContent='🔊';}
+  else if(st==='thk'){vc.textContent='⚙️';vs.className='vo-st idle';vs.textContent='THINKING…';fab.textContent='⏳';}
+  else{vc.textContent='🎙️';vs.className='vo-st idle';vs.textContent='TAP TO SPEAK';fab.textContent='🎙️';}
+  if(vActive&&st!=='off'){vb.style.display='flex';document.getElementById('vmbarTxt').textContent=st==='lst'?'🎤 Listening…':st==='spk'?'🔊 VAULT is speaking…':st==='thk'?'⚙️ Thinking…':'🎙️ Voice active — tap mic to speak';}
+}
+
+function openVO(){document.getElementById('vOv').classList.add('show');vActive=true;setVSt('idle');}
+function closeVO(){stopLstn();speechSynthesis.cancel();document.getElementById('vOv').classList.remove('show');vActive=false;setVSt('off');document.getElementById('vmbar').style.display='none';}
+function tglVoice(){
+  if(document.getElementById('vOv').classList.contains('show')){if(vListening)stopLstn();else startLstn();}
+  else{goTab('chat');openVO();setTimeout(()=>startLstn(),350);}
+}
+
+function startLstn(){
+  if(!SR){alert('Speech recognition not supported.\n• Android: Use Chrome\n• iPhone: Use Safari');return;}
+  if(vSpeaking)speechSynthesis.cancel();
+  if(vListening)return;
+  recog=new SR();
+  recog.continuous=false;recog.interimResults=true;recog.lang='en-US';recog.maxAlternatives=1;
+  vListening=true;setVSt('lst');
+  document.getElementById('voTr').textContent='Listening… speak now';
+  let fin='',intr='';
+  recog.onresult=e=>{intr='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t;else intr+=t;}document.getElementById('voTr').textContent=(fin+intr)||'Listening…';};
+  recog.onend=()=>{vListening=false;const sp=(fin||intr).trim();if(sp){document.getElementById('voTr').textContent='"'+sp+'"';setVSt('thk');sendVoice(sp);}else{if(vActive)setVSt('idle');}};
+  recog.onerror=e=>{vListening=false;if(e.error==='no-speech')document.getElementById('voTr').textContent='No speech detected. Tap Speak.';else if(e.error==='not-allowed'){alert('Microphone blocked. Allow mic in browser settings.');closeVO();}else document.getElementById('voTr').textContent='Error: '+e.error;if(vActive)setVSt('idle');};
+  recog.start();
+}
+function stopLstn(){vListening=false;if(recog)try{recog.stop();}catch(e){}if(vActive)setVSt('idle');}
+
+async function sendVoice(text){
+  goTab('chat');hwelcome();
+  addBub('me',text,true);
+  chatMsgs.push({role:'user',content:text});
+  const typ=addBub('ai','<div class="typing"><span></span><span></span><span></span></div>');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:buildSys()+'\n\nVOICE MODE: respond in plain conversational sentences. Max 3-4 short sentences. No markdown.',messages:chatMsgs})});
+    const data=await res.json();
+    typ.remove();
+    const reply=data.content?.map(b=>b.text||'').join('')||'Could you repeat that?';
+    chatMsgs.push({role:'assistant',content:reply});
+    const el=addBub('ai',md(reply),false,true);
+    const si=el.querySelector('.sp-ind');
+    if(si)si.classList.add('show');
+    speak(reply,()=>{if(si)si.classList.remove('show');if(vActive)setVSt('idle');});
+    if(vActive)setVSt('spk');
+    document.getElementById('voTr').textContent=reply.substring(0,110)+(reply.length>110?'…':'');
+  }catch(e){typ.remove();const err='Connection error. Please check your internet.';addBub('ai',err);if(vActive){speak(err);setVSt('idle');}}
+}
+
+// ════ CHAT ════
+let chatMsgs=[],chatBusy=false;
+function rsz(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,88)+'px';}
+function hKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
+function fh(t){const i=document.getElementById('cIn');i.value=t;rsz(i);i.focus();}
+function sq(t){document.getElementById('cIn').value=t;sendChat();}
+function hwelcome(){document.getElementById('cWelcome').style.display='none';document.getElementById('cGrid').style.display='none';}
+
+function addBub(role,content,isVoice=false,withSI=false){
+  const msgs=document.getElementById('cmsg');
+  const d=document.createElement('div');d.className='msg '+role;
+  const vb=isVoice?'<div class="vbadge">🎤 Voice</div>':'';
+  const si=withSI?'<div class="sp-ind"><div class="sp-bars"><div class="sp-bar" style="height:7px"></div><div class="sp-bar" style="height:13px"></div><div class="sp-bar" style="height:9px"></div><div class="sp-bar" style="height:15px"></div></div> Speaking…</div>':'';
+  d.innerHTML=`<div class="av ${role}">${role==='ai'?'💎':'👤'}</div><div class="bub">${vb}${content}${si}</div>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;
+}
+
+function md(t){
+  return t
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em style="color:var(--gn);font-style:normal;font-weight:600">$1</em>')
+    .replace(/`(.*?)`/g,'<code style="background:rgba(201,168,76,.1);color:var(--gd2);padding:1px 5px;border-radius:4px;font-family:var(--M);font-size:10px">$1</code>')
+    .replace(/^### (.+)$/gm,'<div style="font-weight:700;font-size:11px;color:var(--gd);margin:9px 0 3px;letter-spacing:1px;text-transform:uppercase">$1</div>')
+    .replace(/^## (.+)$/gm,'<div style="font-weight:700;font-size:13px;color:var(--gd2);margin:11px 0 4px">$1</div>')
+    .replace(/^\d+\. (.+)$/gm,'<div style="margin:3px 0;padding-left:12px;position:relative;font-family:var(--M);font-size:11px"><span style="color:var(--gd);position:absolute;left:0">›</span>$1</div>')
+    .replace(/^[-•·] (.+)$/gm,'<div style="margin:2px 0;padding-left:12px;position:relative;font-family:var(--M);font-size:11px;color:var(--tx2)"><span style="color:var(--gd);position:absolute;left:0">·</span>$1</div>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
+
+async function sendChat(){
+  if(chatBusy)return;
+  const inp=document.getElementById('cIn');const txt=inp.value.trim();if(!txt)return;
+  hwelcome();inp.value='';inp.style.height='auto';
+  chatBusy=true;document.getElementById('sndBtn').disabled=true;
+  addBub('me',txt);chatMsgs.push({role:'user',content:txt});
+  const typ=addBub('ai','<div class="typing"><span></span><span></span><span></span></div>');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildSys(),messages:chatMsgs})});
+    const data=await res.json();typ.remove();
+    const reply=data.content?.map(b=>b.text||'').join('')||'Error. Try again.';
+    chatMsgs.push({role:'assistant',content:reply});
+    const el=addBub('ai',md(reply),false,vCfg.speak);
+    if(vCfg.speak){const si=el.querySelector('.sp-ind');if(si)si.classList.add('show');speak(reply,()=>{if(si)si.classList.remove('show');});}
+  }catch(e){typ.remove();addBub('ai','<span style="color:var(--rd)">Connection error. Try again.</span>');}
+  chatBusy=false;document.getElementById('sndBtn').disabled=false;inp.focus();
+}
+
+// ════ SCAN ════
+let selCN='Any Product',camSt=null,scanLp=null,phB64=null;
+function sCat(el){document.querySelectorAll('.cat').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');selCN=el.dataset.c;}
+function setM(m){
+  ['cam','type','photo'].forEach(x=>{document.getElementById('mt-'+x).classList.remove('sel');document.getElementById('m-'+x).style.display='none';});
+  document.getElementById('mt-'+m).classList.add('sel');document.getElementById('m-'+m).style.display='block';
+  document.getElementById('ab').style.display='none';document.getElementById('rb').style.display='none';
+  if(m!=='cam')stopCam();
+}
+async function startCam(){
+  try{
+    camSt=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280}},audio:false});
+    document.getElementById('cam').srcObject=camSt;document.getElementById('vw').style.display='block';
+    document.getElementById('bStart').style.display='none';document.getElementById('bStop').style.display='flex';
+    if('BarcodeDetector' in window){
+      const bd=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','code_93','itf','qr_code','data_matrix','pdf417','aztec','codabar']});
+      scanLp=setInterval(async()=>{try{const cs=await bd.detect(document.getElementById('cam'));if(cs.length>0){const v=cs[0].rawValue;document.getElementById('camCode').value=v;document.getElementById('bVCam').disabled=false;pulseEl('camCode');stopCam();setTimeout(()=>verifyCam(),500);}}catch(e){}},400);
+    }else{document.getElementById('camCode').removeAttribute('readonly');document.getElementById('camCode').placeholder='Read barcode and type here → tap Verify';document.getElementById('bVCam').disabled=false;}
+  }catch(e){alert('Camera denied. Use the Type tab instead.');}
+}
+function stopCam(){if(camSt){camSt.getTracks().forEach(t=>t.stop());camSt=null;}if(scanLp){clearInterval(scanLp);scanLp=null;}const vw=document.getElementById('vw');if(vw)vw.style.display='none';document.getElementById('bStart').style.display='flex';document.getElementById('bStop').style.display='none';}
+function pulseEl(id){const el=document.getElementById(id);el.style.borderColor='var(--gn)';el.style.boxShadow='0 0 0 3px rgba(61,220,132,.18)';setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},2500);}
+document.getElementById('camCode').addEventListener('input',function(){document.getElementById('bVCam').disabled=this.value.trim().length<2;});
+function loadPh(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const url=ev.target.result;phB64=url.split(',')[1];const pv=document.getElementById('pp');pv.src=url;pv.style.display='block';document.getElementById('upz').querySelector('.up-i').textContent='✅';document.getElementById('upz').querySelector('.up-t').textContent='Photo ready';document.getElementById('bPh').disabled=false;};r.readAsDataURL(f);}
+
+const SSTEPS=['Connecting to Claude AI…','Searching web for product data…','Cross-referencing brand databases…','Checking authenticity markers…','Compiling verdict & market value…'];
+let stTmr=null;
+function showAna(lbl){document.getElementById('ab').style.display='block';document.getElementById('rb').style.display='none';document.getElementById('abLbl').textContent=lbl;const sl=document.getElementById('slist');sl.innerHTML=SSTEPS.map((s,i)=>`<div class="si" id="si${i}"><div class="si-d"></div>${s}</div>`).join('');if(stTmr)clearInterval(stTmr);let i=0;stTmr=setInterval(()=>{if(i>0)document.getElementById('si'+(i-1))?.setAttribute('class','si dn');const el=document.getElementById('si'+i);if(el)el.setAttribute('class','si ac');i++;if(i>=SSTEPS.length)clearInterval(stTmr);},900);}
+function hideAna(){document.getElementById('ab').style.display='none';clearInterval(stTmr);}
+
+function mkPr(id,ex){
+  const sk=loadSK();
+  const ctx=sk.length?'\nLearned skills context:\n'+sk.map(s=>s.name+':\n'+s.insights).join('\n'):'';
+  return`You are a universal product authentication expert with web access.${ctx}\nCategory: ${selCN}\nIdentifier: "${id}"\n${ex||''}\n\n1. Search web to identify this product\n2. Verify if genuine/official\n3. Find retail + resale/market value\n4. List auth checkpoints for this category\n5. Clear verdict\n\nReturn ONLY valid JSON (no markdown):\n{"verdict":"REAL"|"FAKE"|"INSUFFICIENT_DATA","confidence":0-100,"product_name":"name","brand":"brand","category":"${selCN}","retail_price":"price or N/A","market_value":"value or N/A","market_range":"low-high or N/A","auth_checks":[{"status":"ok"|"warn"|"bad","text":"check"}],"red_flags":[],"summary":"2-3 sentences","buy_recommendation":"BUY"|"PASS"|"VERIFY_FIRST","where_to_verify":"method"}`;
+}
+
+async function verifyCam(){const c=document.getElementById('camCode').value.trim();if(!c){alert('No barcode. Try typing manually.');return;}showAna('Searching for barcode: '+c);document.getElementById('ab').scrollIntoView({behavior:'smooth',block:'start'});await runAuth(mkPr(c,'Barcode: '+c),c);}
+async function verifyType(){const q=document.getElementById('typeQ').value.trim();const b=document.getElementById('typeBr').value.trim();const p=document.getElementById('typePr').value.trim();if(!q){alert('Enter product name or barcode.');return;}showAna('Searching for "'+q+'"…');document.getElementById('ab').scrollIntoView({behavior:'smooth',block:'start'});const ex=[b&&'Brand: '+b,p&&'Price paid: '+p].filter(Boolean).join('\n');await runAuth(mkPr(q,ex),q);}
+async function verifyPhoto(){
+  if(!phB64){alert('Upload a photo first.');return;}
+  const b=document.getElementById('phBr').value.trim();const nt=document.getElementById('phNt').value.trim();
+  showAna('Analyzing with AI vision…');document.getElementById('ab').scrollIntoView({behavior:'smooth',block:'start'});
+  const sk=loadSK();const ctx=sk.length?'\nLearned skills:\n'+sk.map(s=>s.name+':\n'+s.insights).join('\n'):'';
+  const pr=`You are a universal product authentication expert.${ctx}\nCategory: ${selCN} Brand: ${b||'Unknown'} Context: ${nt||'none'}\nExamine logos, fonts, materials, labels, build quality, proportions, any inconsistencies.\nReturn ONLY valid JSON: {"verdict":"REAL"|"FAKE"|"INSUFFICIENT_DATA","confidence":0-100,"product_name":"name","brand":"brand","category":"${selCN}","retail_price":"if known","market_value":"estimate","market_range":"range","auth_checks":[{"status":"ok"|"warn"|"bad","text":"observation"}],"red_flags":[],"summary":"2-3 sentences","buy_recommendation":"BUY"|"PASS"|"VERIFY_FIRST","where_to_verify":"method"}`;
+  try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:phB64}},{type:'text',text:pr}]}]})});const data=await res.json();parseShow(data.content?.map(b=>b.text||'').join('')||'','Photo');}catch(e){hideAna();showErr();}
+}
+async function runAuth(pr,id){
+  try{const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:pr}]})});const data=await res.json();parseShow(data.content?.map(b=>b.text||'').filter(Boolean).join('')||'',id);}catch(e){hideAna();showErr();}
+}
+
+const scanH=[];
+const VM={REAL:{lb:'✅ AUTHENTIC',cls:'vr',fc:'cfg',hb:'tag-gn',he:'✅'},FAKE:{lb:'❌ LIKELY COUNTERFEIT',cls:'vf',fc:'cfr',hb:'tag-rd',he:'❌'},INSUFFICIENT_DATA:{lb:'⚠️ UNVERIFIED',cls:'vu',fc:'cfu',hb:'tag-gd',he:'⚠️'}};
+const RM={BUY:{tx:'🟢 SAFE TO BUY',cs:'rb'},PASS:{tx:'🔴 DO NOT BUY — HIGH RISK',cs:'rp_'},VERIFY_FIRST:{tx:'🟡 GET PHYSICAL VERIFICATION FIRST',cs:'rv_'}};
+
+function parseShow(txt,id){
+  hideAna();
+  let json=txt.replace(/```json|```/g,'').trim();const m=json.match(/\{[\s\S]*\}/);if(m)json=m[0];
+  let r;try{r=JSON.parse(json);}catch{r={verdict:'INSUFFICIENT_DATA',confidence:40,product_name:id,brand:'Unknown',category:selCN,retail_price:'N/A',market_value:'N/A',market_range:'N/A',auth_checks:[{status:'warn',text:'Could not get complete data. Try more specific details.'}],red_flags:[],summary:txt.substring(0,220)||'Analysis incomplete.',buy_recommendation:'VERIFY_FIRST',where_to_verify:'Check official brand website'};}
+  showResult(r);
+  if(vCfg.speak){const rc=RM[r.buy_recommendation]||RM.VERIFY_FIRST;const ve=r.verdict==='REAL'?'Authentic':r.verdict==='FAKE'?'Likely counterfeit':'Unverified';speak(`${r.product_name}. Verdict: ${ve}. Confidence: ${r.confidence} percent. ${r.summary}`);}
+}
+
+function showResult(r){
+  const v=VM[r.verdict]||VM.INSUFFICIENT_DATA;const rc=RM[r.buy_recommendation]||RM.VERIFY_FIRST;
+  const ch=(r.auth_checks||[]).map(c=>{const dc=c.status==='ok'?'dok':c.status==='bad'?'dbd':'dwn';const ic=c.status==='ok'?'✓':c.status==='bad'?'✗':'!';return`<div class="chk"><div class="cd_ ${dc}">${ic}</div><span>${c.text}</span></div>`;}).join('');
+  const fl=(r.red_flags||[]).length?r.red_flags.map(f=>`<div class="chk"><div class="cd_ dbd">✗</div><span>${f}</span></div>`).join(''):`<div class="chk"><div class="cd_ dok">✓</div><span>No red flags detected</span></div>`;
+  const html=`<div class="rh"><div><div class="rv ${v.cls}">${v.lb}</div><div class="rn">${r.product_name||'—'} · ${r.brand||''}</div>${r.where_to_verify?`<div class="rl">🔗 ${r.where_to_verify}</div>`:''}</div><div class="rsc"><div class="scl">CONFIDENCE</div><div class="scn">${r.confidence}%</div><div class="cbar"><div class="cf ${v.fc}" style="width:${r.confidence}%"></div></div></div></div><div class="rp"><div class="pb pbg"><div class="pbl" style="color:var(--gd)">RETAIL PRICE</div><div class="pbv" style="color:var(--gd2)">${r.retail_price||'N/A'}</div></div><div class="pb pbgn"><div class="pbl" style="color:var(--gn)">MARKET VALUE</div><div class="pbv" style="color:var(--gn)">${r.market_value||'N/A'}</div><div class="pbs">${r.market_range||''}</div></div></div><div class="rck"><div class="ckl">AUTH CHECKS</div>${ch}</div>${(r.red_flags||[]).length?`<div class="rck" style="border-bottom:1px solid var(--br)"><div class="ckl" style="color:var(--rd)">RED FLAGS</div>${fl}</div>`:''}<div class="rsm">${r.summary||''}</div><div class="rrec ${rc.cs}">${rc.tx}</div>`;
+  const box=document.getElementById('rb');box.innerHTML=html;box.style.display='block';
+  setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),100);
+  scanH.unshift({name:r.product_name||'Product',cat:r.category||selCN,v:r.verdict,...v});renderH();
+}
+function renderH(){if(!scanH.length)return;document.getElementById('hSec').style.display='block';document.getElementById('hList').innerHTML=scanH.slice(0,5).map(h=>`<div class="hi"><span class="hi-e">${h.he}</span><div class="hi-i"><div class="hi-n">${h.name}</div><div class="hi-c">${h.cat}</div></div><span class="tag ${h.hb}">${h.v}</span></div>`).join('');}
+function showErr(){const b=document.getElementById('rb');b.innerHTML='<div style="padding:18px;text-align:center;color:var(--rd);font:300 10px var(--M)">⚠️ Connection error. Check internet and try again.</div>';b.style.display='block';}
+
+// ════ INSTALL GUIDE ════
+function toggleMethod(id){const el=document.getElementById(id);el.classList.toggle('open');}
+
+// Download files from current page (they're in the same folder)
+function dlFile(name){
+  const files={
+    index:'./index.html',sw:'./sw.js',manifest:'./manifest.json',icon:'./icon.svg'
+  };
+  const fnames={index:'index.html',sw:'sw.js',manifest:'manifest.json',icon:'icon.svg'};
+  const a=document.createElement('a');a.href=files[name];a.download=fnames[name];a.click();
+}
+
+// ════ INIT ════
+refUI();
+updVoice();
+
+// AUTO SELF-IMPROVEMENT on startup
+// Wait 4 seconds after load so the UI is ready, then quietly learn in background
+setTimeout(()=>{
+  if(document.getElementById('togAL').classList.contains('on')){
+    // Only auto-learn if been more than 6 hours since last session OR no skills yet
+    const sk=loadSK();
+    const lastAL=parseInt(localStorage.getItem(AL_KEY+'-time')||'0');
+    const now=Date.now();
+    const sixHours=6*60*60*1000;
+    if(now-lastAL>sixHours||sk.length===0){
+      localStorage.setItem(AL_KEY+'-time',now.toString());
+      runAutoLearn();
+    }
+  }
+},4000);
+</script>
+</body>
+</html>
